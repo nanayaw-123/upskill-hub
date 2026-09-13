@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shop — UpSkill Hub</title>
+    <meta name="description" content="Browse and buy UpSkill Hub digital playbooks. Filter by career, finance, health, and readiness." />
+    <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/store.css" />
+  </head>
+  <body>
+    <div class="grain"></div>
+    <header class="nav">
+      <div class="nav-inner">
+        <a class="brand" href="index.html">
+          <img src="assets/logo.svg" alt="" />
+          <span>UpSkill <em>Hub</em></span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="shop.html">Shop</a></li>
+          <li><a href="cart.html">Cart</a></li>
+          <li><a href="checkout.html">Checkout</a></li>
+        </ul>
+        <div class="nav-cta">
+          <label class="search-field">
+            <span aria-hidden="true">⌕</span>
+            <input type="search" placeholder="Search products" data-search />
+          </label>
+          <button class="cart-btn" type="button" data-cart-open aria-label="Open cart">
+            🛒 <span class="cart-count" data-cart-count hidden>0</span>
+          </button>
+          <button class="menu-btn" aria-label="Open menu">☰</button>
+        </div>
+      </div>
+      <div class="mobile-panel wrap">
+        <a href="shop.html">Shop</a>
+        <a href="cart.html">Cart</a>
+        <a href="checkout.html">Checkout</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="page-hero">
+        <div class="wrap">
+          <p class="kicker">Store</p>
+          <h1>All products</h1>
+          <p class="lede" style="margin-top: 12px">Digital playbooks. Add to cart, then complete payment on Whop.</p>
+        </div>
+      </section>
+      <section style="padding-top: 12px">
+        <div class="wrap">
+          <div class="shop-bar">
+            <div class="filters">
+              <button class="filter active" data-filter-btn="All">All</button>
+              <button class="filter" data-filter-btn="Career">Career</button>
+              <button class="filter" data-filter-btn="Finance">Finance</button>
+              <button class="filter" data-filter-btn="Health">Health</button>
+              <button class="filter" data-filter-btn="Readiness">Readiness</button>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center">
+              <span data-shop-count class="cart-note">5 products</span>
+              <select class="sort-field" data-sort aria-label="Sort products">
+                <option value="featured">Featured</option>
+                <option value="price-asc">Price: low to high</option>
+                <option value="price-desc">Price: high to low</option>
+                <option value="name">Name</option>
+              </select>
+            </div>
+          </div>
+          <div class="product-grid" data-shop-grid></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap foot">
+        <a class="brand" href="index.html"><img src="assets/logo.svg" alt="" /><span>UpSkill Hub Store</span></a>
+        <div class="foot-links">
+          <a href="shop.html">Shop</a>
+          <a href="cart.html">Cart</a>
+          <a href="https://whop.com/upskill-hub/" target="_blank" rel="noopener">Whop</a>
+        </div>
+        <p>© <span data-year></span> UpSkill Hub</p>
+      </div>
+    </footer>
+    <script src="js/products.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

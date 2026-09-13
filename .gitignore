@@ -1,0 +1,5 @@
+.gh-config/
+bin/
+.vercel/
+.DS_Store
+*.log

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Checkout — UpSkill Hub</title>
+    <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/store.css" />
+  </head>
+  <body>
+    <div class="grain"></div>
+    <header class="nav">
+      <div class="nav-inner">
+        <a class="brand" href="index.html">
+          <img src="assets/logo.svg" alt="" />
+          <span>UpSkill <em>Hub</em></span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="shop.html">Shop</a></li>
+          <li><a href="cart.html">Cart</a></li>
+        </ul>
+        <div class="nav-cta">
+          <button class="cart-btn" type="button" data-cart-open aria-label="Open cart">
+            🛒 <span class="cart-count" data-cart-count hidden>0</span>
+          </button>
+          <button class="menu-btn" aria-label="Open menu">☰</button>
+        </div>
+      </div>
+      <div class="mobile-panel wrap">
+        <a href="shop.html">Shop</a>
+        <a href="cart.html">Cart</a>
+      </div>
+    </header>
+    <main>
+      <section class="page-hero">
+        <div class="wrap" data-checkout-page></div>
+      </section>
+    </main>
+    <footer>
+      <div class="wrap foot">
+        <a class="brand" href="index.html"><img src="assets/logo.svg" alt="" /><span>UpSkill Hub Store</span></a>
+        <p>Secure payment on Whop · © <span data-year></span></p>
+      </div>
+    </footer>
+    <script src="js/products.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

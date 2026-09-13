@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none" role="img" aria-label="UpSkill Hub">
+  <defs>
+    <linearGradient id="gGold" x1="18" y1="62" x2="64" y2="10" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C7922A"/>
+      <stop offset=".45" stop-color="#F0C75E"/>
+      <stop offset="1" stop-color="#FFE9A8"/>
+    </linearGradient>
+    <linearGradient id="gTeal" x1="12" y1="68" x2="62" y2="16" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0E8F8A"/>
+      <stop offset="1" stop-color="#5FF0DC"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="2.4" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <path d="M14 52c0 7.2 10.4 12 26 12s26-4.8 26-12V28.5c0-2.4-1.6-4.6-4.4-6.1C56.6 20.2 48.8 19 40 19s-16.6 1.2-21.6 3.4C15.6 23.9 14 26.1 14 28.5V52z" stroke="url(#gTeal)" stroke-width="3.2" stroke-linejoin="round"/>
+  <path d="M40 22v41.5" stroke="url(#gTeal)" stroke-width="2.2" opacity=".85"/>
+  <path d="M18.5 50.5c2.2-10.4 8.2-22.8 21.5-28.8" stroke="url(#gGold)" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M61.5 50.5c-2.2-10.4-8.2-22.8-21.5-28.8" stroke="url(#gGold)" stroke-width="2.4" stroke-linecap="round"/>
+  <path filter="url(#glow)" d="M28 48.5 40 34.2 47.2 42.4 56.8 24.5" stroke="url(#gGold)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path filter="url(#glow)" d="M49.2 24.2h10.6v10.4" stroke="url(#gGold)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
