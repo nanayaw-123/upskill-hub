@@ -196,9 +196,15 @@ module.exports = async function handler(req, res) {
       );
       if (!r.ok) throw new Error("whop api " + r.status);
       const json = await r.json();
-      const plansRes = await fetch("https://api.whop.com/api/v1/plans?visibilities=visible", {
-        headers: { Authorization: "Bearer " + process.env.WHOP_API_KEY },
-      });
+      const plansRes = await fetch(
+        "https://api.whop.com/api/v1/plans?account_id=" + encodeURIComponent(company),
+        {
+          headers: {
+            Authorization: "Bearer " + process.env.WHOP_API_KEY,
+            "Api-Version-Date": "2026-08-21-1",
+          },
+        }
+      );
       const plansJson = plansRes.ok ? await plansRes.json() : { data: [] };
       const planByProduct = {};
       for (const plan of plansJson.data || []) {
@@ -211,7 +217,7 @@ module.exports = async function handler(req, res) {
         .map((p) => {
           const extra = EXTRAS[p.route] || {};
           const plan = planByProduct[p.id] || {};
-          const price = Number(plan.renewal_price || plan.initial_price || 0);
+          const price = Number(plan.initial_price || plan.renewal_price || 0);
           const original = plan.strike_through_initial_price || plan.strike_through_renewal_price;
           const img =
             (p.gallery_images && p.gallery_images[0] && p.gallery_images[0].url) ||
