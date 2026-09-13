@@ -1,5 +1,20 @@
 const STORE = "https://whop.com/upskill-hub";
 const EXTRAS = {
+  "a-knife-named-darling": {
+    id: "knife",
+    tag: "Fiction",
+    image: "/assets/knife-cover.jpg",
+    skill: "A dark enemies-to-lovers romance: two adults, one locked house, a story that can bury them.",
+    deliverable: "Standalone 18+ novella (docx) with cover. Instant download after Whop checkout.",
+    time: "Read in one sitting.",
+    notFor: "Anyone under 18, or readers who want closed-door / fade-to-black romance.",
+    includes: [
+      "Full novella: A Knife Named Darling",
+      "Cover included",
+      "Adults 18+ only",
+      "Explicit consensual scenes, strong language, career sabotage",
+    ],
+  },
   "the-disaster-survival-playbook": {
     id: "disaster",
     tag: "Readiness",
@@ -89,6 +104,7 @@ function guessTag(title, blurb) {
   if (/(send|remit|money|transfer|finance|wealth)/.test(t)) return "Finance";
   if (/(depress|appetite|glp|health|medication|mental|crisis)/.test(t)) return "Health";
   if (/(disaster|survival|72 hour|earthquake|flood|readiness)/.test(t)) return "Readiness";
+  if (/(romance|lovers|novella|fiction|darling)/.test(t)) return "Fiction";
   return "Playbook";
 }
 
@@ -161,7 +177,7 @@ async function liveFromWhop() {
       save,
       tag: extra.tag || guessTag(item.title, tagline),
       cta: "Buy now",
-      image: item.image,
+      image: extra.image || item.image,
       url: item.url,
       digital: true,
       tagline,
@@ -231,7 +247,7 @@ module.exports = async function handler(req, res) {
             original: original && original > price ? original : undefined,
             tag: extra.tag || guessTag(p.title, p.headline || ""),
             cta: "Buy now",
-            image: img,
+            image: extra.image || img,
             url: STORE + "/products/" + (p.route || "") + "/",
             digital: true,
             tagline: p.headline || extra.tagline || p.title,

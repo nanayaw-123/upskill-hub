@@ -47,6 +47,27 @@ async function whop(path, opts) {
   return json;
 }
 
+async function uploadFile(buffer, filename, mime) {
+  const form = new FormData();
+  form.append("file", new Blob([buffer], { type: mime }), filename);
+  const res = await fetch(WHOP + "/files", {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer " + process.env.WHOP_API_KEY,
+      "Api-Version-Date": "2026-08-21-1",
+    },
+    body: form,
+  });
+  const text = await res.text();
+  let json = {};
+  try {
+    json = JSON.parse(text);
+  } catch {
+    json = { raw: text };
+  }
+  return { ok: res.ok, status: res.status, json };
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-admin-secret");
@@ -97,7 +118,6 @@ module.exports = async function handler(req, res) {
         description,
         visibility: "visible",
         route: slugify(title) || undefined,
-        custom_cta: "buy",
         plan_options: {
           plan_type: "one_time",
           initial_price: price,
@@ -108,12 +128,49 @@ module.exports = async function handler(req, res) {
       }),
     });
     const route = product.route || slugify(title);
+    const attach = [];
+
+    async function tryUpload(b64, filename, mime) {
+      if (!b64) return;
+      const buf = Buffer.from(String(b64), "base64");
+      const up = await uploadFile(buf, filename, mime);
+      attach.push({ filename, upload: up.status, id: up.json && up.json.id, error: up.ok ? undefined : up.json });
+      const fid = up.json && up.json.id;
+      if (!fid) return;
+      for (const expId of ["exp_SkdXIiqKpTTUhJ", "exp_fMIgnszTZVrcd8"]) {
+        try {
+          const post = await fetch(WHOP + "/forum_posts", {
+            method: "POST",
+            headers: HEADERS(),
+            body: JSON.stringify({
+              experience_id: "exp_u87t3zg7ToEpNZ",
+              content: filename + " attached for " + title,
+              attachments: [{ id: fid }],
+            }),
+          });
+          const t = await post.text();
+          attach.push({ forum: post.status, body: t.slice(0, 240) });
+          break;
+        } catch (e) {
+          attach.push({ forumError: String(e.message || e) });
+        }
+      }
+    }
+
+    await tryUpload(
+      body.fileBase64,
+      body.fileName || slugify(title) + ".docx",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    );
+    await tryUpload(body.coverBase64, "cover.jpg", "image/jpeg");
+
     res.status(200).json({
       ok: true,
       productId: product.id,
       title: product.title,
       url: "https://whop.com/upskill-hub/products/" + route + "/",
-      note: "Listing is live on Whop. Attach the ebook file in Whop → Files if buyers need a download.",
+      attach,
+      note: "Listing is live on Whop. If attach is empty, drop the ebook into the product Files app in the Whop dashboard.",
     });
   } catch (err) {
     res.status(500).json({ error: String(err.message || err) });
