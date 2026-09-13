@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Create an ebook — UpSkill Hub</title>
+    <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/store.css" />
+    <style>
+      .form-grid { display: grid; gap: 14px; max-width: 720px; }
+      label { display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
+      input, textarea, select {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--line);
+        color: var(--ink);
+        border-radius: 12px;
+        padding: 12px 14px;
+        font: inherit;
+      }
+      textarea { min-height: 220px; resize: vertical; }
+      .status { margin-top: 16px; color: var(--muted); }
+      .status.ok { color: var(--teal); }
+      .status.err { color: #f0a0a0; }
+    </style>
+  </head>
+  <body>
+    <div class="grain"></div>
+    <header class="nav">
+      <div class="nav-inner">
+        <a class="brand" href="index.html"><img src="assets/logo.svg" alt="" /><span>UpSkill <em>Hub</em></span></a>
+        <ul class="nav-links">
+          <li><a href="shop.html">Shop</a></li>
+          <li><a href="create.html">Create</a></li>
+          <li><a href="cart.html">Cart</a></li>
+        </ul>
+        <div class="nav-cta">
+          <a class="btn btn-ghost" href="shop.html">Store</a>
+          <button class="menu-btn" aria-label="Open menu">☰</button>
+        </div>
+      </div>
+      <div class="mobile-panel wrap">
+        <a href="shop.html">Shop</a>
+        <a href="create.html">Create</a>
+      </div>
+    </header>
+    <main>
+      <section class="page-hero">
+        <div class="wrap">
+          <p class="kicker">Creator</p>
+          <h1>Write an ebook. Publish to Whop.</h1>
+          <p class="lede" style="margin-top:14px;max-width:640px">
+            Draft here, download a print-ready file, then publish a paid listing to your UpSkill Hub Whop store. Checkout and file delivery still run on Whop.
+          </p>
+        </div>
+      </section>
+      <section style="padding-top:12px">
+        <div class="wrap form-grid">
+          <p id="conn" class="stock">Checking Whop connection…</p>
+          <label>Title
+            <input id="title" maxlength="80" placeholder="The Overqualified Problem" />
+          </label>
+          <label>Headline (one line)
+            <input id="headline" maxlength="140" placeholder="Navigate career challenges when you're too qualified." />
+          </label>
+          <label>Price (USD)
+            <input id="price" type="number" min="1" step="0.01" placeholder="29.00" />
+          </label>
+          <label>Category
+            <select id="tag">
+              <option>Career</option>
+              <option>Finance</option>
+              <option>Health</option>
+              <option>Readiness</option>
+              <option>Playbook</option>
+            </select>
+          </label>
+          <label>Short description (product page)
+            <textarea id="description" placeholder="What the buyer gets, in a few sentences."></textarea>
+          </label>
+          <label>Ebook body
+            <textarea id="body" style="min-height:320px" placeholder="Write the full ebook here. Use blank lines between paragraphs."></textarea>
+          </label>
+          <div class="hero-actions">
+            <button class="btn btn-ghost" type="button" id="dl">Download ebook</button>
+            <button class="btn btn-gold" type="button" id="pub">Publish listing on Whop</button>
+          </div>
+          <p id="msg" class="status"></p>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <div class="wrap foot">
+        <a class="brand" href="index.html"><img src="assets/logo.svg" alt="" /><span>UpSkill Hub</span></a>
+        <p>Listings checkout on Whop · © <span data-year></span></p>
+      </div>
+    </footer>
+    <script src="js/products.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+      const $ = (id) => document.getElementById(id);
+      fetch("/api/publish")
+        .then((r) => r.json())
+        .then((d) => {
+          $("conn").textContent = d.connected
+            ? d.publishReady
+              ? "Whop connected. You can publish listings."
+              : "Whop key is set. Add PUBLISH_SECRET on Vercel to enable the publish button."
+            : "Whop is not connected. Create an Account API key in the Whop dashboard, add WHOP_API_KEY + PUBLISH_SECRET in Vercel, then publish.";
+        })
+        .catch(() => {
+          $("conn").textContent = "Could not reach publish API.";
+        });
+
+      function ebookHtml() {
+        const title = $("title").value.trim() || "Untitled";
+        const body = $("body").value
+          .split(/\n{2,}/)
+          .map((p) => "<p>" + p.replace(/</g, "&lt;").replace(/\n/g, "<br>") + "</p>")
+          .join("");
+        return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title>
+          <style>body{font-family:Georgia,serif;max-width:720px;margin:48px auto;padding:0 24px;line-height:1.6;color:#111}
+          h1{font-size:32px} p{margin:0 0 1em}</style></head>
+          <body><p>UpSkill Hub</p><h1>${title}</h1>
+          <p><em>${$("headline").value}</em></p>${body}</body></html>`;
+      }
+
+      $("dl").onclick = () => {
+        const blob = new Blob([ebookHtml()], { type: "text/html" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = ($("title").value.trim() || "ebook").replace(/\s+/g, "-") + ".html";
+        a.click();
+      };
+
+      $("pub").onclick = async () => {
+        const secret = window.prompt("Admin publish secret (PUBLISH_SECRET from Vercel):");
+        if (!secret) return;
+        $("msg").className = "status";
+        $("msg").textContent = "Publishing to Whop…";
+        try {
+          const r = await fetch("/api/publish", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "x-admin-secret": secret },
+            body: JSON.stringify({
+              title: $("title").value,
+              headline: $("headline").value,
+              description: $("description").value,
+              price: $("price").value,
+              body: $("body").value,
+              tag: $("tag").value,
+            }),
+          });
+          const d = await r.json();
+          if (!r.ok) throw new Error(d.error || r.status);
+          $("msg").className = "status ok";
+          $("msg").innerHTML = "Live on Whop: <a href=\"" + d.url + "\" target=\"_blank\" rel=\"noopener\">" + d.url + "</a><br>" + (d.note || "");
+        } catch (e) {
+          $("msg").className = "status err";
+          $("msg").textContent = e.message;
+        }
+      };
+    </script>
+  </body>
+</html>
