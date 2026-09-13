@@ -142,68 +142,41 @@ function parseCatalog(html) {
   return out;
 }
 
-function parseDetails(html) {
-  const tagline = decode(
-    (html.match(/<h1[^>]*>([^<]+)<\/h1>/) || [])[1] || ""
-  ).trim();
-  const blurb = decode(
-    (html.match(/<meta name="description" content="([^"]*)"/) || [])[1] || ""
-  ).trim();
-  const includes = [];
-  const list = html.match(/<li[^>]*>([\s\S]*?)<\/li>/gi) || [];
-  for (const li of list.slice(0, 8)) {
-    const text = decode(li.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim());
-    if (text && text.length > 8 && text.length < 180) includes.push(text);
-  }
-  return { tagline, blurb, includes };
-}
-
 async function liveFromWhop() {
   const html = await getHtml(STORE + "/products");
   const catalog = parseCatalog(html);
-  const detailed = await Promise.all(
-    catalog.map(async (item) => {
-      let tagline = "";
-      let blurb = "";
-      let includes = [];
-      try {
-        const page = await getHtml(item.url);
-        const d = parseDetails(page);
-        tagline = d.tagline;
-        blurb = d.blurb;
-        includes = d.includes;
-      } catch {
-        /* catalog row is enough */
-      }
-      const extra = EXTRAS[item.slug] || {};
-      const save =
-        item.original && item.original > item.price
-          ? Math.round((1 - item.price / item.original) * 100) + "%"
-          : extra.save;
-      return {
-        id: extra.id || item.slug,
-        slug: item.slug,
-        title: item.title,
-        price: item.price,
-        original: item.original,
-        save,
-        tag: extra.tag || guessTag(item.title, tagline + " " + blurb),
-        cta: "Buy now",
-        image: item.image,
-        url: item.url,
-        digital: true,
-        tagline: tagline || extra.tagline || item.title,
-        blurb: blurb || extra.blurb || tagline || item.title,
-        skill: extra.skill || tagline || item.title,
-        deliverable: extra.deliverable || "Instant digital files after Whop checkout.",
-        time: extra.time || "Available immediately after purchase.",
-        notFor: extra.notFor || "Anyone who does not need this specific outcome.",
-        includes: extra.includes || includes,
-        caution: extra.caution,
-      };
-    })
-  );
-  return detailed;
+  return catalog.map((item) => {
+    const extra = EXTRAS[item.slug] || {};
+    const save =
+      item.original && item.original > item.price
+        ? Math.round((1 - item.price / item.original) * 100) + "%"
+        : extra.save;
+    const tagline = extra.tagline || extra.skill || item.title;
+    return {
+      id: extra.id || item.slug,
+      slug: item.slug,
+      title: item.title,
+      price: item.price,
+      original: item.original,
+      save,
+      tag: extra.tag || guessTag(item.title, tagline),
+      cta: "Buy now",
+      image: item.image,
+      url: item.url,
+      digital: true,
+      tagline,
+      blurb:
+        extra.blurb ||
+        extra.skill ||
+        "Digital product from UpSkill Hub. Instant access after checkout on Whop.",
+      skill: extra.skill || tagline,
+      deliverable: extra.deliverable || "Instant digital files after Whop checkout.",
+      time: extra.time || "Available immediately after purchase.",
+      notFor: extra.notFor || "Anyone who does not need this specific outcome.",
+      includes: extra.includes || [],
+      caution: extra.caution,
+    };
+  });
 }
 
 module.exports = async function handler(req, res) {
