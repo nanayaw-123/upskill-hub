@@ -244,8 +244,9 @@ module.exports = async function handler(req, res) {
             caution: extra.caution,
           };
         });
-      if (products.length) {
-        res.status(200).json({ source: "whop-api", products });
+      const priced = products.filter((p) => p.price > 0 && p.title !== "Website");
+      if (priced.length) {
+        res.status(200).json({ source: "whop-api", products: priced });
         return;
       }
     }
