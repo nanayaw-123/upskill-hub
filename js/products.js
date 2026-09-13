@@ -144,7 +144,23 @@ USH.formatPrice = function (n) {
 };
 
 USH.getProduct = function (id) {
-  return USH.products.find((p) => p.id === id);
+  if (!id) return undefined;
+  return USH.products.find((p) => p.id === id || p.slug === id);
+};
+
+USH.loadProducts = async function () {
+  try {
+    const res = await fetch("/api/products", { cache: "no-store" });
+    if (!res.ok) throw new Error("api");
+    const data = await res.json();
+    if (data && Array.isArray(data.products) && data.products.length) {
+      USH.products = data.products;
+      USH.catalogSource = data.source;
+    }
+  } catch (e) {
+    USH.catalogSource = "local";
+  }
+  return USH.products;
 };
 
 USH.productCard = function (p) {

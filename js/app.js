@@ -1,4 +1,4 @@
-(function () {
+(async function () {
   const nav = document.querySelector(".nav");
   const menuBtn = document.querySelector(".menu-btn");
   const panel = document.querySelector(".mobile-panel");
@@ -21,6 +21,9 @@
     el.textContent = new Date().getFullYear();
   });
 
+  if (USH.loadProducts) await USH.loadProducts();
+  if (USH.cart && USH.cart.render) USH.cart.render();
+
   function renderGrid(host, list) {
     if (!host) return;
     if (!list.length) {
@@ -36,7 +39,7 @@
 
   const featured = document.querySelector("[data-featured]");
   if (featured) {
-    const p = USH.products.find((x) => x.id === "send") || USH.products[0];
+    const p = USH.products.find((x) => x.id === "send" || x.slug === "send-smarter-5c") || USH.products[0];
     featured.innerHTML = `
       <div class="featured-shot">
         <img src="${p.image}" alt="${p.title}" />
@@ -61,7 +64,9 @@
       </div>`;
   }
 
-  const allowedTags = ["Career", "Finance", "Health", "Readiness"];
+  const allowedTags = Array.from(
+    new Set(["Career", "Finance", "Health", "Readiness"].concat(USH.products.map((p) => p.tag)))
+  );
   const urlTag = new URLSearchParams(location.search).get("tag");
   const shopState = {
     tag: allowedTags.includes(urlTag) ? urlTag : "All",
@@ -94,7 +99,10 @@
     if (!shop) return;
     const list = shopList();
     renderGrid(shop, list);
-    if (countEl) countEl.textContent = list.length + " product" + (list.length === 1 ? "" : "s");
+    if (countEl) {
+      const live = USH.catalogSource && String(USH.catalogSource).startsWith("whop") ? " · live from Whop" : "";
+      countEl.textContent = list.length + " product" + (list.length === 1 ? "" : "s") + live;
+    }
   }
 
   if (shop) {
