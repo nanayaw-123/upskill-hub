@@ -101,6 +101,39 @@ module.exports = async function handler(req, res) {
 
   try {
     const body = await readBody(req);
+    if (body.attachOnly && body.productId) {
+      const attach = [];
+      async function tryUpload(b64, filename, mime) {
+        if (!b64) return;
+        const buf = Buffer.from(String(b64), "base64");
+        const up = await uploadFile(buf, filename, mime);
+        attach.push({ filename, upload: up.status, id: up.json && up.json.id, error: up.ok ? undefined : up.json });
+        const fid = up.json && up.json.id;
+        if (!fid) return;
+        try {
+          const post = await fetch(WHOP + "/forum_posts", {
+            method: "POST",
+            headers: HEADERS(),
+            body: JSON.stringify({
+              experience_id: "exp_u87t3zg7ToEpNZ",
+              content: filename + " for " + String(body.title || body.productId),
+              attachments: [{ id: fid }],
+            }),
+          });
+          attach.push({ forum: post.status, body: (await post.text()).slice(0, 240) });
+        } catch (e) {
+          attach.push({ forumError: String(e.message || e) });
+        }
+      }
+      await tryUpload(
+        body.fileBase64,
+        body.fileName || "ebook.docx",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      );
+      await tryUpload(body.coverBase64, "cover.jpg", "image/jpeg");
+      res.status(200).json({ ok: true, productId: body.productId, attach });
+      return;
+    }
     const title = String(body.title || "").trim().slice(0, 80);
     const price = Number(body.price);
     if (!title || !price || price <= 0) {
