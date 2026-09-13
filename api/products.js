@@ -184,9 +184,16 @@ module.exports = async function handler(req, res) {
   res.setHeader("Cache-Control", "s-maxage=300, stale-while-revalidate=1800");
   try {
     if (process.env.WHOP_API_KEY) {
-      const r = await fetch("https://api.whop.com/api/v1/products?visibilities=visible", {
-        headers: { Authorization: "Bearer " + process.env.WHOP_API_KEY },
-      });
+      const company = process.env.WHOP_COMPANY_ID || "biz_OXpbrvD7qkRVHf";
+      const r = await fetch(
+        "https://api.whop.com/api/v1/products?account_id=" + encodeURIComponent(company),
+        {
+          headers: {
+            Authorization: "Bearer " + process.env.WHOP_API_KEY,
+            "Api-Version-Date": "2026-08-21-1",
+          },
+        }
+      );
       if (!r.ok) throw new Error("whop api " + r.status);
       const json = await r.json();
       const plansRes = await fetch("https://api.whop.com/api/v1/plans?visibilities=visible", {

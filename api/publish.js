@@ -87,8 +87,7 @@ module.exports = async function handler(req, res) {
     }
     const headline = String(body.headline || title).trim().slice(0, 140);
     const description = String(body.description || body.body || "").trim();
-    const me = await whop("/accounts/me", { method: "GET" });
-    const accountId = me.id;
+    const accountId = process.env.WHOP_COMPANY_ID || "biz_OXpbrvD7qkRVHf";
     const product = await whop("/products", {
       method: "POST",
       body: JSON.stringify({
