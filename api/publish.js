@@ -49,6 +49,7 @@ async function whop(path, opts) {
 
 async function uploadFile(buffer, filename, mime) {
   const form = new FormData();
+  form.append("filename", filename);
   form.append("file", new Blob([buffer], { type: mime }), filename);
   const res = await fetch(WHOP + "/files", {
     method: "POST",
